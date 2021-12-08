@@ -49,7 +49,9 @@ if (argv.from) {
 } else {
     const dependencyVersion = (targetPackageJson.dependencies || {})[argv.source];
     const devDependencyVersion = (targetPackageJson.devDependencies || {})[argv.source];
-    const sourcePackageVersion = dependencyVersion || devDependencyVersion;
+    const optionalDependencyVersion = (targetPackageJson.optionsDependencies || {})[argv.source];
+    const peerDependencyVersion = (targetPackageJson.peerDependencies || {})[argv.source];
+    const sourcePackageVersion = dependencyVersion || devDependencyVersion || optionalDependencyVersion || peerDependencyVersion;
     if (!sourcePackageVersion) {
         console.error(`Package ${argv.source} does not exist in dependencies or devDependencies.`);
         process.exit(1);
@@ -87,13 +89,10 @@ if (argv.from) {
 }
 
 sourcePackageJsonPromise.then(sourcePackageJson => {
-    if (argv.prod) {
-        syncDependencies(targetPackageJson.dependencies, sourcePackageJson);
-    }
-
-    if (argv.dev) {
-        syncDependencies(targetPackageJson.devDependencies, sourcePackageJson);
-    }
+    syncDependencies(targetPackageJson.dependencies, sourcePackageJson);
+    syncDependencies(targetPackageJson.devDependencies, sourcePackageJson);
+    syncDependencies(targetPackageJson.peerDependencies, sourcePackageJson);
+    syncDependencies(targetPackageJson.optionalDependencies, sourcePackageJson);
 
     const json = JSON.stringify(targetPackageJson, undefined, '  ');
     if (argv.preview) {
