@@ -7,6 +7,7 @@ const path = require('path');
 const process = require('process');
 const got = require('got');
 const yargs = require('yargs');
+const semver = require('semver')
 
 const argv = yargs.options({
     target: {
@@ -106,7 +107,9 @@ function syncDependencies(dependencies, targetJson) {
     for (var dependency in dependencies) {
         if (dependencies.hasOwnProperty(dependency)) {
             version = `^${dependencies[dependency]}`.replace('^^', '^').replace('~', '')
-            dependencies[dependency] = version
+            if (semver.valid(version.slice(1))) {
+                dependencies[dependency] = version
+            }
 
             var version = targetJson.dependencies[dependency] || targetJson.devDependencies[dependency];
             if (version && version !== dependencies[dependency]) {
