@@ -113,9 +113,11 @@ function syncDependencies(dependencies, targetJson) {
 
             var version = targetJson.dependencies[dependency] || targetJson.devDependencies[dependency];
             if (version && version !== dependencies[dependency]) {
-                version = `^${version}`.replace('^^', '^')
-                console.log('Updating ' + dependency + ' from ' + dependencies[dependency] + ' to ' + version + '.');
-                dependencies[dependency] = version;
+                version = `^${version}`.replace('^^', '^').replace('~', '')
+                if (semver.valid(version.slice(1))) {
+                    console.log('Updating ' + dependency + ' from ' + dependencies[dependency] + ' to ' + version + '.');
+                    dependencies[dependency] = version;
+                }
             }
         }
     }
