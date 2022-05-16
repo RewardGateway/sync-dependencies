@@ -105,7 +105,7 @@ sourcePackageJsonPromise.then(sourcePackageJson => {
 function syncDependencies(dependencies, targetJson) {
     for (var dependency in dependencies) {
         if (dependencies.hasOwnProperty(dependency)) {
-            version = `^${dependencies[dependency]}`.replace('^^', '^')
+            version = `^${dependencies[dependency]}`.replace('^^', '^').replace('~', '')
             dependencies[dependency] = version
 
             var version = targetJson.dependencies[dependency] || targetJson.devDependencies[dependency];
